@@ -18,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 mqtt_client = None
-pause_interval = 3
+pause_interval = 10
 read_interval = 0.001
 
 def exit_handler(servers, modbus_clients, mqtt_client):          
