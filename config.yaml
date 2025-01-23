@@ -1,11 +1,11 @@
-name: "Sungrow Inverter"
-version: "0.4.2"
-slug: "sungrow"
-description: "Sungrow Inverter"
+name: "Paneltrack"
+version: "0.1.0"
+slug: "paneltrack_modbus"
+description: "Paneltrack"
 init: false
 startup: application
 boot: auto
-url: "https://github.com/heinrich321/voyanti-sungrow/"
+url: "https://github.com/stephan-carstens/ha-paneltrack"
 arch:
   - aarch64
   - amd64
@@ -14,34 +14,22 @@ arch:
   - i386
 options:
   servers:
-    - name: "Sungrow Inverter 1"
-      ha_display_name: "SG1"
-      serialnum: "A2340700442"
-      server_type: "SUNGROW_INVERTER"
-      connected_client: "Client1"
-      modbus_id: 1
-    - name: "Sungrow Logger 1"
-      ha_display_name: "SGL1"
-      serialnum: "B2391405111"
-      server_type: "SUNGROW_LOGGER"
-      connected_client: "Client1"
-      modbus_id: 247
-    - name: "Grid Meter"
-      ha_display_name: "GM"
+    - name: "Paneltrack"
+      ha_display_name: "PT1"
       serialnum: "unknown"
-      server_type: "ACREL_METER"
-      connected_client: "Client1"
-      modbus_id: 2
+      server_type: "PANELTRACK"
+      connected_client: "ModbusPT"
+      modbus_id: 3
   clients:
-    - name: "ModbusTCP"
-      ha_display_name: "Client1"
+    - name: "ModbusPT"
+      ha_display_name: "ModbusPT"
       type: "TCP"
-      host: "10.0.0.15"
-      port: 502
-  mqtt_host: "core-mosquitto"
+      host: "192.168.1.91"
+      port: 1234
+  mqtt_host: "192.168.1.104"
   mqtt_port: 1883
   mqtt_user: "mqtt"
-  mqtt_password: "mqtt"
+  mqtt_password: "mqtt-users"
   mwtt_ha_discovery_topic: "homeassistant"
   mqtt_base_topic: "modbus"
 schema:
@@ -49,7 +37,7 @@ schema:
     - name: str
       ha_display_name: str
       serialnum: str
-      server_type: list(SUNGROW_INVERTER|SUNGROW_LOGGER|ACREL_METER)
+      server_type: list(PANELTRACK)
       connected_client: str
       modbus_id: int(0,255)
   clients:
