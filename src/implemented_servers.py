@@ -90,5 +90,6 @@ class PanelTrack(Server):
         """ Model-specific writes might be necessary to support more models """
         pass
 
+# Declare all defined server abstractions here. Add to schema in config.yaml to enable selecting.
 class ServerTypes(Enum):
     PANELTRACK = PanelTrack

@@ -12,6 +12,9 @@ class RegisterTypes(enum.Enum):
 
 
 class DataType(enum.Enum):
+    """
+        Data types used by server registers. Used to choose decoding method. depending op server.
+    """
     # Unsigned integers
     U16 = "U16"
     U32 = "U32"
@@ -75,38 +78,6 @@ class DataType(enum.Enum):
             DataType.UTF8: None
         }
         return ranges[self]
-
-    def encode(self, value: Any) -> bytes:
-        """
-        Encode a Python value to bytes according to the data type.
-        
-        Args:
-            value: The value to encode
-            
-        Returns:
-            bytes: The encoded value
-            
-        Raises:
-            ValueError: If the value is out of range for the type
-        """
-        # TODO: Implement encoding logic
-        raise NotImplementedError
-
-    def decode(self, data: bytes) -> Any:
-        """
-        Decode bytes to a Python value according to the data type.
-        
-        Args:
-            data: The bytes to decode
-            
-        Returns:
-            The decoded value
-            
-        Raises:
-            ValueError: If the data cannot be decoded
-        """
-        # TODO: Implement decoding logic
-        raise NotImplementedError
 
 
 if __name__ == "__main__":

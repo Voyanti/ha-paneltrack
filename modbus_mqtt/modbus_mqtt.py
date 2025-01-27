@@ -15,6 +15,9 @@ def slugify(text):
     return text.replace(' ', '_').replace('(', '').replace(')', '').replace('/', 'OR').replace('&', ' ').replace(':', '').replace('.', '').lower()
 
 class MqttClient(mqtt.Client):
+    """ 
+        paho MQTT abstraction for home assistant
+    """
     def __init__(self, options: Options):
         def generate_uuid():
             random_part = getrandbits(64)
@@ -84,7 +87,7 @@ class MqttClient(mqtt.Client):
 
         self.publish_availability(True, server)
 
-        for register_name, details in server.write_parameters:
+        for register_name, details in server.write_parameters.items():
             discovery_payload = {
                 "name": register_name,
                 "unique_id": f"{server.nickname}_{slugify(register_name)}",

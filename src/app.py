@@ -2,12 +2,19 @@ from time import sleep
 from datetime import datetime, timedelta
 import atexit
 import logging
+from queue import Queue
 
+if __name__ == "__main__":
+    import sys, os
+    p = os.path.abspath('modbus_mqtt')
+    print(p)
+    sys.path.insert(0, p)
 from loader import load_options, Options
 from client import Client
 from implemented_servers import ServerTypes
-from modbus_mqtt import MqttClient
+from modbus_mqtt import MqttClient, RECV_Q
 from paho.mqtt.enums import MQTTErrorCode
+from paho.mqtt.client import MQTTMessage
 
 
 logging.basicConfig(
@@ -31,6 +38,27 @@ def exit_handler(servers, modbus_clients, mqtt_client):
         client.close()
 
     mqtt_client.loop_stop()
+
+def message_handler(q: Queue[MQTTMessage], servers: list):
+    """
+        Writes appropriate server registers for each message in mqtt receive queue
+    """
+    logger.info(f"Checking for command messages.")
+    while not q.empty():
+        msg = q.get()
+        if msg is None: continue
+
+        # command_topic = f"{self.base_topic}/{server.nickname}/{slugify(register_name)}/set"
+        server_ha_display_name: str = msg.topic.split('/')[1]
+        s = None
+        for s in servers: 
+            if s.nickname == server_ha_display_name:
+                server = s
+        if s is None: raise ValueError(f"Server {server_ha_display_name} not available. Cannot write.")
+        register_name: str = msg.topic.split('/')[2]
+        value: str = msg.payload.decode('utf-8')
+
+        server.connected_client.write_registers(float(value), server = s, register_name = register_name, register_info=server.registers[register_name])    
 
 
 def sleep_if_midnight():
@@ -102,6 +130,7 @@ try:
     
     # Publish Discovery Topics
     for server in servers:
+        # mqtt_client.subscribe_write_topics(server)
         mqtt_client.publish_discovery_topics(server)
 
     # every read_interval seconds, read the registers and publish to mqtt
@@ -113,6 +142,8 @@ try:
                 mqtt_client.publish_to_ha(register_name, value, server)
                 sleep(read_interval)
             logger.info(f"Published all parameter values for {server.name=}")   
+
+            if not RECV_Q.empty(): message_handler(RECV_Q, servers)
 
         # publish availability
         sleep(pause_interval)

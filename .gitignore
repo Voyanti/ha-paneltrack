@@ -2,7 +2,7 @@
 .devcontainer/
 .vscode/tasks.json
 data/
-sungrow/developing.ipynb
+src/developing.ipynb
 requirements copy.txt
 __pycache__/
 sungrow/fault_code.txt

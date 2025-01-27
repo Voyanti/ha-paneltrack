@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ServerOptions:
+    """ Modbus Server Options as read from config json"""
     name: str
     ha_display_name: str
     serialnum: str
@@ -31,6 +32,7 @@ class ServerOptions:
 
 @dataclass
 class ClientOptions:
+    """ Modbus Client Options as read from config json"""
     name: str
     ha_display_name: str
     type: str
@@ -50,6 +52,7 @@ class ModbusRTUOptions(ClientOptions):
 
 @dataclass
 class Options:
+    """ Concatenated options for reading specific format of all options from config json """
     servers: list[ServerOptions]
     clients: list[Union[ModbusRTUOptions, ModbusTCPOptions]]
 
@@ -63,7 +66,7 @@ class Options:
 
 def validate_nicknames(opts: Options):
     """
-    Verify unique names for clients and servers of options.
+    Verify unique names for clients and servers of options. Used as unique identifiers.
     """
     for cs in ('clients', 'servers'):
         names = [c.ha_display_name for c in getattr(opts, cs)]
@@ -74,6 +77,7 @@ def validate_nicknames(opts: Options):
             raise ValueError(f"Client nicknames must be alphanumeric")
         
 def validate_server_implemented(opts: Options):
+    """ Validate that the specified server type is specified in implemented servers enum. """
     for server in opts.servers:
         if server.server_type not in [t.name for t in ServerTypes]:
             raise ValueError(f"Server type {server.server_type} not defined in implemented_servers.ServerTypes")

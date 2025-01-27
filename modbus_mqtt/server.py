@@ -8,7 +8,23 @@ logger = logging.getLogger(__name__)
 
 
 class Server(metaclass=abc.ABCMeta):
+    """
+        Base server class. Represents modbus server: its name, serial, model, modbus slave_id. e.g. SungrowInverter(Server).
+
+        Includes functions to be abstracted by model/ manufacturer-specific implementations for 
+        decoding, encoding data read/ write, reading model code, setting up model-specific registers and checking availability.
+    """
     def __init__(self, sr_options, clients):
+        """
+            Initialised from modbus_mqtt.loader.ServerOptions object
+
+            Parameters:
+            -----------
+                - sr_options: modbus_mqtt.loader.ServerOptions - options as read from config json
+                - clients: list[modbus_mqtt.client.Client] - list of all TCP/Serial clients connected to machine
+
+            TODO move to classmethod, to separate home-assistant dependency out
+        """
         self.name = sr_options.name
         self.nickname = sr_options.ha_display_name
         self.serialnum = sr_options.serialnum
@@ -30,6 +46,10 @@ class Server(metaclass=abc.ABCMeta):
         return f"{self.nickname}"
     
     def read_model(self, device_type_code_param_key="Device type code"):
+        """
+            Reads model-holding register and sets self.model to its value.
+            Can be used in abstractions as-is by specifying model code register name in param device_type_code_param_key
+        """
         logger.info(f"Reading model for server")
         modelcode = self.connected_client.read_registers(self, device_type_code_param_key, self.registers[device_type_code_param_key])
         self.model = self.device_info[modelcode]['model']
@@ -51,7 +71,7 @@ class Server(metaclass=abc.ABCMeta):
         response = self.connected_client._read(address, count, slave_id, register_type)
 
         if response.isError(): 
-            self.sonnected_client._handle_error_response(response)
+            self.connected_client._handle_error_response(response)
             available = False
 
         return available

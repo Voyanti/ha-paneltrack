@@ -10,7 +10,22 @@ from server import Server
 
 
 class Client:
+    """
+        Modbus client representation: name, nickname (ha_display_name), and pymodbus client. 
+
+        Wraps around pymodbus.client.ModbusSerialClient | pymodbus.client.ModbusTCPClient to 
+        fan out dictionary information, and decode/ encode register values when reading/ writing/
+    """
     def __init__(self, cl_options: ModbusTCPOptions | ModbusRTUOptions):
+        """
+            Initialised from modbus_mqtt.loader.ClientOptions object
+
+            Parameters:
+            -----------
+                - cl_options: modbus_mqtt.loader.ClientOptions - options as read from config json
+
+            TODO move to classmethod, to separate home-assistant dependency out
+        """
         self.name = cl_options.name
         self.nickname = cl_options.ha_display_name
         self.client: ModbusSerialClient | ModbusTcpClient
@@ -37,14 +52,16 @@ class Client:
         return result
 
     def read_registers(self, server:Server, register_name:str, register_info:dict):
-        """ Read a group of registers using pymodbus 
+        """ Read a group of registers (parameter) using pymodbus 
         
-            Reuires implementation of the abstract method 'Server._decoded()'
+            Requires implementation of the abstract method 'Server._decoded()'
 
             Parameters:
             -----------
+                - server: modbus_mqtt.server.Server: used to find client and modbus slave address to read from
+                - register_name: str: slave parameter name
+                - register_info: dict: slave parameter info dict(addr=, dtyoe=, multiplier=. count=. unit=, slave_id=, register_type=)
 
-                - address: int: 1-indexed slave register address
         """
 
         address = register_info["addr"]
@@ -72,7 +89,8 @@ class Client:
         return val
 
     def write_registers(self, value:float, server:Server, register_name: str, register_info:dict):
-        """ Write to an individual register using pymodbus.
+        """ 
+            Write to an individual register using pymodbus.
 
             Reuires implementation of the abstract methods 
             'Server._validate_write_val()' and 'Server._encode()'
@@ -118,6 +136,9 @@ class Client:
         self.client.close()
 
     def __str__(self):
+        """
+            self.nickname is used as a unique id for finding the client to which each server is connected.
+        """
         return f"{self.nickname}"
 
     def _handle_error_response(self, result):
