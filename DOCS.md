@@ -9,14 +9,14 @@ Before using, state all the modbus devices in `config.yaml`. Multiple servers an
 ## Server 
 Each server should be defined as 
 ```
-  - name: "Sungrow Inverter 1"
+  - name: "Paneltrack 1"
     ha_display_name: "SG1"
     serialnum: "A2340700442"
-    server_type: "SUNGROW_INVERTER"
+    server_type: "PANELTRACK"
     connected_client: "Client1"
     modbus_id: 1
 ```
-- `server_type` is used to select the class of server to instantiate. A Sungrow_Inverter and Sungrow_Logger, with their register maps are pre-defined, but additional classes can be added. See adding custom server types
+- `server_type` is used to select the class of server to instantiate. PANELTRACK with its register maps are pre-defined, but additional classes can be added. See adding custom server types
 - `connected_client` specifies on which client bus (abstraction of serial port or tcp ip) the server is connected. Most systems use a single client.
 - `modbus_id`: Modbus slave address of the server
 

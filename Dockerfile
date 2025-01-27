@@ -7,17 +7,12 @@ RUN mkdir -p ${WORK_DIR}
 WORKDIR /${WORK_DIR}
 COPY requirements.txt .
 
-RUN apk add --no-cache git \
-    && git clone https://github.com/stephan-carstens/modbus-mqtt.git /tmp/modbus-mqtt \
-    && cp /tmp/modbus-mqtt/*.py . \
-    && rm -rf /tmp/modbus-mqtt \
-    && apk del git
-
 # install python libraries
 RUN pip3 install -r requirements.txt
 
 # Copy code
 COPY src/  ./
+COPY modbus_mqtt/ ./
 COPY run.sh  ./
 
 
