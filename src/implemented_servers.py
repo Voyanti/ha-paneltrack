@@ -8,9 +8,6 @@ from enum import Enum
 logger = logging.getLogger(__name__)
 
 class PanelTrack(Server):
-    supported_models = ('unknown') 
-    manufacturer = "Sungrow"
-
     # Register Map
     # Source https://github.com/heinrich321/voyanti-paneltrack/blob/main/paneltrack.py
     ################################################################################################################################################
@@ -48,14 +45,18 @@ class PanelTrack(Server):
     }
     ################################################################################################################################################
 
-    registers = dict(register_map)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.supported_models = ('paneltrack',) 
+        self.manufacturer = "Paneltrack"
+        self.model = 'paneltrack'
+        self.parameters = PanelTrack.parameters
+
         # self.model = None
 
     def read_model(self, device_type_code_param_key="Device Type Code"):
-        self.model = 'unknown'
+        return self.model
     
     def setup_valid_registers_for_model(self):
         """ Removes invalid registers for the specific model of inverter.
