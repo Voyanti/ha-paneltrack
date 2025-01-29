@@ -1,5 +1,5 @@
 name: "Paneltrack"
-version: "0.1.0"
+version: "0.1.1"
 slug: "paneltrack_modbus"
 description: "Paneltrack"
 init: false
@@ -17,7 +17,7 @@ options:
     - name: "PT1"
       serialnum: "unknown"
       server_type: "PANELTRACK"
-      connected_client: "ModbusPT"
+      connected_client: "Client1"
       modbus_id: 3
   clients:
     - name: "Client1"
@@ -26,6 +26,8 @@ options:
       port: 1234
   mqtt_host: "192.168.1.104"
   mqtt_port: 1883
+  # mqtt_host: "localhost"
+  # mqtt_port: 1884
   mqtt_user: "mqtt"
   mqtt_password: "mqtt-users"
   mwtt_ha_discovery_topic: "homeassistant"

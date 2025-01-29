@@ -44,6 +44,7 @@ def load_options(json_rel_path="/data/options.json") -> tuple[dict, dict]:
     converter = Converter()
 
     logger.info("Attempting to read configuration json")
+    logger.info(os.path.join(os.getcwd(), json_rel_path))
     if os.path.exists(json_rel_path):
         if json_rel_path[-4:] == 'json':
             with open(json_rel_path) as f:

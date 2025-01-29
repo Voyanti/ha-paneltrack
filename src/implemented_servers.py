@@ -51,7 +51,8 @@ class PanelTrack(Server):
         self.supported_models = ('paneltrack',) 
         self.manufacturer = "Paneltrack"
         self.model = 'paneltrack'
-        self.parameters = PanelTrack.parameters
+        self.parameters = PanelTrack.register_map
+        self.write_parameters = {}
 
         # self.model = None
 
