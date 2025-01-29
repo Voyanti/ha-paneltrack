@@ -4,8 +4,9 @@ import os
 import logging
 import yaml
 from cattrs import structure, unstructure, Converter
+from options import *
 from implemented_servers import ServerTypes
-from typing import Union
+
 logger = logging.getLogger(__name__)
 
 """
@@ -19,50 +20,6 @@ logger = logging.getLogger(__name__)
     x case connection type TCP: specs(name, host, port)
     x case connection type RTU: specs(name, baudrate: int, bytesize: int, parity: bool, stopbits: int
 """
-
-@dataclass
-class ServerOptions:
-    """ Modbus Server Options as read from config json"""
-    name: str
-    ha_display_name: str
-    serialnum: str
-    server_type: str
-    connected_client: str
-    modbus_id: int
-
-@dataclass
-class ClientOptions:
-    """ Modbus Client Options as read from config json"""
-    name: str
-    ha_display_name: str
-    type: str
-
-@dataclass
-class ModbusTCPOptions(ClientOptions):
-    host: str
-    port: int
-
-@dataclass
-class ModbusRTUOptions(ClientOptions):
-    port: int
-    baudrate: int
-    bytesize: int
-    parity: bool
-    stopbits: int
-
-@dataclass
-class Options:
-    """ Concatenated options for reading specific format of all options from config json """
-    servers: list[ServerOptions]
-    clients: list[Union[ModbusRTUOptions, ModbusTCPOptions]]
-
-    mqtt_host: str
-    mqtt_host: str
-    mqtt_port: int
-    mqtt_user: str
-    mqtt_password: str
-    mwtt_ha_discovery_topic: str
-    mqtt_base_topic: str
 
 def validate_nicknames(opts: Options):
     """

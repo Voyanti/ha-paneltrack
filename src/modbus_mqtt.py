@@ -52,28 +52,30 @@ class MqttClient(mqtt.Client):
         self.on_message = on_message
 
     def publish_discovery_topics(self, server):
-        if not server.model or not server.manufacturer or not server.serialnum or not server.nickname or not server.registers:
+        # TODO check if more separation from server is necessary/ possible
+        nickname = server.unique_name
+        if not server.model or not server.manufacturer or not server.serial or not nickname or not server.parameters:
             logging.info(f"Server not properly configured. Cannot publish MQTT info")
             raise ValueError(f"Server not properly configured. Cannot publish MQTT info")
  
-        logger.info(f"Publishing discovery topics for {server.nickname}")
+        logger.info(f"Publishing discovery topics for {nickname}")
         device = {
             "manufacturer": server.manufacturer,
             "model": server.model,
-            "identifiers": [f"{server.nickname}"],
-            "name": f"{server.nickname}"
+            "identifiers": [f"{nickname}"],
+            "name": f"{nickname}"
             # "name": f"{server.manufacturer} {server.serialnum}"
         }
 
         # publish discovery topics for legal registers
         # assume registers in server.registers
-        availability_topic = f"{self.base_topic}_{server.nickname}/availability"
+        availability_topic = f"{self.base_topic}_{nickname}/availability"
 
-        for register_name, details in server.registers.items():
-            state_topic = f"{self.base_topic}/{server.nickname}/{slugify(register_name)}/state"
+        for register_name, details in server.parameters.items():
+            state_topic = f"{self.base_topic}/{nickname}/{slugify(register_name)}/state"
             discovery_payload = {
                     "name": register_name,
-                    "unique_id": f"{server.nickname}_{slugify(register_name)}",
+                    "unique_id": f"{nickname}_{slugify(register_name)}",
                     "state_topic": state_topic,
                     "availability_topic": availability_topic,
                     "device": device,
@@ -82,7 +84,7 @@ class MqttClient(mqtt.Client):
                 }
             state_class = details.get("state_class", False)
             if state_class: discovery_payload['state_class'] = state_class
-            discovery_topic = f"{self.ha_discovery_topic}/sensor/{server.nickname}/{slugify(register_name)}/config"
+            discovery_topic = f"{self.ha_discovery_topic}/sensor/{nickname}/{slugify(register_name)}/config"
             self.publish(discovery_topic, json.dumps(discovery_payload), retain=True)
 
         self.publish_availability(True, server)
@@ -90,21 +92,23 @@ class MqttClient(mqtt.Client):
         for register_name, details in server.write_parameters.items():
             discovery_payload = {
                 "name": register_name,
-                "unique_id": f"{server.nickname}_{slugify(register_name)}",
-                "command_topic": f"{self.base_topic}/{server.nickname}/{slugify(register_name)}/set",
+                "unique_id": f"{nickname}_{slugify(register_name)}",
+                "command_topic": f"{self.base_topic}/{nickname}/{slugify(register_name)}/set",
                 "unit_of_measurement": details["unit"],
                 "availability_topic": availability_topic,
                 "device": device
             }
 
-            discovery_topic = f"{self.ha_discovery_topic}/number/{server.nickname}/{slugify(register_name)}/config"
+            discovery_topic = f"{self.ha_discovery_topic}/number/{nickname}/{slugify(register_name)}/config"
             self.publish(discovery_topic, json.dumps(discovery_payload), retain=True)
 
     def publish_to_ha(self, register_name, value, server):
-        state_topic = f"{self.base_topic}/{server.nickname}/{slugify(register_name)}/state"
+        nickname = server.unique_name
+        state_topic = f"{self.base_topic}/{nickname}/{slugify(register_name)}/state"
         self.publish(state_topic, value) #, retain=True)
 
     def publish_availability(self, avail, server):
-        availability_topic = f"{self.base_topic}_{server.nickname}/availability"
+        nickname = server.unique_name
+        availability_topic = f"{self.base_topic}_{nickname}/availability"
         self.publish(availability_topic, "online" if avail else "offline", retain=True)
         

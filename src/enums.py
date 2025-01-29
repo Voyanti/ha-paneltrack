@@ -7,10 +7,6 @@ class RegisterTypes(enum.Enum):
     HOLDING_REGISTER = 4        # Read/ Write
 
 
-# class ClientTypes(enum.Enum):
-#     RTU
-
-
 class DataType(enum.Enum):
     """
         Data types used by server registers. Used to choose decoding method. depending op server.
