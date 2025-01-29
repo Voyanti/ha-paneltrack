@@ -53,7 +53,7 @@ class MqttClient(mqtt.Client):
 
     def publish_discovery_topics(self, server):
         # TODO check if more separation from server is necessary/ possible
-        nickname = server.unique_name
+        nickname = server.name
         if not server.model or not server.manufacturer or not server.serial or not nickname or not server.parameters:
             logging.info(f"Server not properly configured. Cannot publish MQTT info")
             raise ValueError(f"Server not properly configured. Cannot publish MQTT info")
@@ -103,12 +103,12 @@ class MqttClient(mqtt.Client):
             self.publish(discovery_topic, json.dumps(discovery_payload), retain=True)
 
     def publish_to_ha(self, register_name, value, server):
-        nickname = server.unique_name
+        nickname = server.name
         state_topic = f"{self.base_topic}/{nickname}/{slugify(register_name)}/state"
         self.publish(state_topic, value) #, retain=True)
 
     def publish_availability(self, avail, server):
-        nickname = server.unique_name
+        nickname = server.name
         availability_topic = f"{self.base_topic}_{nickname}/availability"
         self.publish(availability_topic, "online" if avail else "offline", retain=True)
         

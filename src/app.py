@@ -4,11 +4,6 @@ import atexit
 import logging
 from queue import Queue
 
-if __name__ == "__main__":
-    import sys, os
-    p = os.path.abspath('modbus_mqtt')
-    print(p)
-    sys.path.insert(0, p)
 from loader import load_options
 from options import Options
 from client import Client
@@ -60,7 +55,7 @@ def message_handler(q: Queue[MQTTMessage], servers: list):
         server_ha_display_name: str = msg.topic.split('/')[1]
         s = None
         for s in servers: 
-            if s.unique_name == server_ha_display_name:
+            if s.name == server_ha_display_name:
                 server = s
         if s is None: raise ValueError(f"Server {server_ha_display_name} not available. Cannot write.")
         register_name: str = msg.topic.split('/')[2]
@@ -124,7 +119,7 @@ try:
         if SPOOF: server.model = "spoof"
         else: 
             if not server.is_available():
-                logger.error(f"Server {server.unique_name} not available")
+                logger.error(f"Server {server.name} not available")
                 raise ConnectionError()                             
             server.set_model()
             server.setup_valid_registers_for_model()
@@ -146,10 +141,10 @@ try:
     while True:
         for server in servers:
             for register_name, details in server.parameters.items():
+                sleep(read_interval)
                 value = server.read_registers(register_name)
                 mqtt_client.publish_to_ha(register_name, value, server)
-                sleep(read_interval)
-            logger.info(f"Published all parameter values for {server.unique_name=}")   
+            logger.info(f"Published all parameter values for {server.name=}")   
 
             if not RECV_Q.empty(): message_handler(RECV_Q, servers)
 

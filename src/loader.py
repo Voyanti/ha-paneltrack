@@ -26,12 +26,12 @@ def validate_nicknames(opts: Options):
     Verify unique names for clients and servers of options. Used as unique identifiers.
     """
     for cs in ('clients', 'servers'):
-        names = [c.ha_display_name for c in getattr(opts, cs)]
+        names = [c.name for c in getattr(opts, cs)]
         if len(set(names)) != len(names): 
-            raise ValueError(f"{cs[:-1]} nicknames must be unique")
+            raise ValueError(f"{cs[:-1]} names must be unique")
         
         if not all([c.isalnum() for c in names]):
-            raise ValueError(f"Client nicknames must be alphanumeric")
+            raise ValueError(f"Client names must be alphanumeric")
         
 def validate_server_implemented(opts: Options):
     """ Validate that the specified server type is specified in implemented servers enum. """

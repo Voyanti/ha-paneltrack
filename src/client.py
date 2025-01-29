@@ -24,7 +24,6 @@ class Client:
             TODO move to classmethod, to separate home-assistant dependency out
         """
         self.name = cl_options.name
-        self.nickname = cl_options.ha_display_name
         self.client: ModbusSerialClient | ModbusTcpClient
 
         if isinstance(cl_options, ModbusTCPOptions):
@@ -72,7 +71,7 @@ class Client:
         """
             self.nickname is used as a unique id for finding the client to which each server is connected.
         """
-        return f"{self.nickname}"
+        return f"{self.name}"
 
     def _handle_error_response(self, result):
         if isinstance(result, ExceptionResponse):
@@ -120,7 +119,6 @@ class SpoofClient:
             TODO move to classmethod, to separate home-assistant dependency out
         """
         self.name = cl_options.name
-        self.nickname = cl_options.ha_display_name
         self.client: ModbusSerialClient | ModbusTcpClient
 
         if isinstance(cl_options, ModbusTCPOptions):
@@ -145,4 +143,4 @@ class SpoofClient:
         """
             self.nickname is used as a unique id for finding the client to which each server is connected.
         """
-        return f"{self.nickname}"
+        return f"{self.name}"

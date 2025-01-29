@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 class Server(metaclass=abc.ABCMeta):
     """
-        Base server class. Represents modbus server: its unique_name, serial, model, modbus slave_id. e.g. SungrowInverter(Server).
+        Base server class. Represents modbus server: its name, serial, model, modbus slave_id. e.g. SungrowInverter(Server).
 
         Includes functions to be abstracted by model/ manufacturer-specific implementations for 
         decoding, encoding data read/ write, reading model code, setting up model-specific registers and checking availability.
     """
-    def __init__(self, unique_name, serial, modbus_id, connected_client):
-        self.unique_name: str = unique_name
+    def __init__(self, name, serial, modbus_id, connected_client):
+        self.name: str = name
         self.serial: str = serial
         self.modbus_id: int = modbus_id
         self.connected_client: Client = connected_client
@@ -32,10 +32,10 @@ class Server(metaclass=abc.ABCMeta):
         # Optional: if used for home assistant
         self.ha_parameters: Optional[dict[str, HAParamInfo]] = None
 
-        logger.info(f"Server {self.unique_name} set up.")
+        logger.info(f"Server {self.name} set up.")
 
     def __str__(self):
-        return f"{self.unique_name}"
+        return f"{self.name}"
     
     def read_registers(self, parameter_name:str):
         """ Read a group of registers (parameter) using pymodbus 
@@ -115,7 +115,7 @@ class Server(metaclass=abc.ABCMeta):
             Reads model-holding register, decodes it and sets self.model: str to its value..
             Specify decoding in Server.device_info = {modelcode:    {name:modelname, ...}  }
         """
-        logger.info(f"Reading model for server {self.unique_name}")
+        logger.info(f"Reading model for server {self.name}")
         self.model = self.read_model()
         logger.info(f"Model read as {self.model}")
 
@@ -123,14 +123,14 @@ class Server(metaclass=abc.ABCMeta):
 
     def is_available(self, register_name="Device type code"):
         """ Contacts any server register and returns true if the server is available """
-        logger.info(f"Verifying availability of server {self.unique_name}")
+        logger.info(f"Verifying availability of server {self.name}")
 
         available = True
 
         address = self.parameters[register_name]["addr"]
         dtype =  self.parameters[register_name]["dtype"]
         multiplier = self.parameters[register_name]["multiplier"]
-        count = dtype.size // 2
+        count = dtype.size // 2 # TODO
         unit = self.parameters[register_name]["unit"]
         slave_id = self.modbus_id
         register_type = self.parameters[register_name]['register_type']
@@ -186,14 +186,13 @@ class Server(metaclass=abc.ABCMeta):
                 - clients: list[modbus_mqtt.client.Client] - list of all TCP/Serial clients connected to machine
         """
         name = opts.name
-        nickname = opts.ha_display_name
         serial = opts.serialnum
-        modbus_id: int| None = opts.modbus_id           # modbus slave_id
+        modbus_id: int = opts.modbus_id           # modbus slave_id
 
         try:
             idx = [str(client) for client in clients].index(opts.connected_client)  # TODO ugly
         except:
-            raise ValueError(f"Client {opts.connected_client} from server {nickname} config not defined in client list")
+            raise ValueError(f"Client {opts.connected_client} from server {name} config not defined in client list")
         connected_client = clients[idx]
 
-        return cls(nickname, serial, modbus_id, connected_client)
+        return cls(name, serial, modbus_id, connected_client)

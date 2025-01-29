@@ -14,15 +14,13 @@ arch:
   - i386
 options:
   servers:
-    - name: "Paneltrack"
-      ha_display_name: "PT1"
+    - name: "PT1"
       serialnum: "unknown"
       server_type: "PANELTRACK"
       connected_client: "ModbusPT"
       modbus_id: 3
   clients:
-    - name: "ModbusPT"
-      ha_display_name: "ModbusPT"
+    - name: "Client1"
       type: "TCP"
       host: "192.168.1.91"
       port: 1234
@@ -35,14 +33,12 @@ options:
 schema:
   servers:
     - name: str
-      ha_display_name: str
       serialnum: str
       server_type: list(PANELTRACK)
       connected_client: str
       modbus_id: int(0,255)
   clients:
     - name: str
-      ha_display_name: str
       type: list(TCP|RTU)
       host: str?
       port: int?

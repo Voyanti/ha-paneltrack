@@ -5,7 +5,6 @@ from typing import Union
 class ServerOptions:
     """ Modbus Server Options as read from config json"""
     name: str
-    ha_display_name: str
     serialnum: str
     server_type: str
     connected_client: str
@@ -15,7 +14,6 @@ class ServerOptions:
 class ClientOptions:
     """ Modbus Client Options as read from config json"""
     name: str
-    ha_display_name: str
     type: str
 
 @dataclass
