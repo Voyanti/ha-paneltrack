@@ -11,11 +11,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Copy code
-COPY modbus_mqtt/ ./
 COPY src/  ./
-COPY modbus_mqtt/ ./
-COPY run.sh  ./
-
 
 # Run
 RUN chmod a+x run.sh

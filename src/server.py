@@ -27,7 +27,7 @@ class Server(metaclass=abc.ABCMeta):
         self.manufacturer:str | None = None
         self.model:str | None = None
         self.device_info:dict | None = None
-        self.parameters: Optional[dict[str, ParamInfo]] = None
+        self.parameters: Optional[dict] = None
 
         # Optional: if used for home assistant
         self.ha_parameters: Optional[dict[str, HAParamInfo]] = None
