@@ -42,26 +42,26 @@ def exit_handler(servers: list[Server], modbus_clients: list[Client], mqtt_clien
 
     mqtt_client.loop_stop()
 
-def message_handler(q: Queue[MQTTMessage], servers: list):
-    """
-        Writes appropriate server registers for each message in mqtt receive queue
-    """
-    logger.info(f"Checking for command messages.")
-    while not q.empty():
-        msg = q.get()
-        if msg is None: continue
+# def message_handler(q: Queue[MQTTMessage], servers: list):
+#     """
+#         Writes appropriate server registers for each message in mqtt receive queue
+#     """
+#     logger.info(f"Checking for command messages.")
+#     while not q.empty():
+#         msg = q.get()
+#         if msg is None: continue
 
-        # command_topic = f"{self.base_topic}/{server.nickname}/{slugify(register_name)}/set"
-        server_ha_display_name: str = msg.topic.split('/')[1]
-        s = None
-        for s in servers: 
-            if s.name == server_ha_display_name:
-                server = s
-        if s is None: raise ValueError(f"Server {server_ha_display_name} not available. Cannot write.")
-        register_name: str = msg.topic.split('/')[2]
-        value: str = msg.payload.decode('utf-8')
+#         # command_topic = f"{self.base_topic}/{server.nickname}/{slugify(register_name)}/set"
+#         server_ha_display_name: str = msg.topic.split('/')[1]
+#         s = None
+#         for s in servers: 
+#             if s.name == server_ha_display_name:
+#                 server = s
+#         if s is None: raise ValueError(f"Server {server_ha_display_name} not available. Cannot write.")
+#         register_name: str = msg.topic.split('/')[2]
+#         value: str = msg.payload.decode('utf-8')
 
-        server.write_registers(float(value), server = s, register_name = register_name, register_info=server.parameters[register_name])    
+#         server.write_registers(float(value), server = s, register_name = register_name, register_info=server.parameters[register_name])    
 
 
 def sleep_if_midnight():
@@ -93,7 +93,6 @@ def sleep_if_midnight():
         sleep_duration = min(30, (next_check - current_time).total_seconds())
         sleep(sleep_duration)
 
-atexit.register(exit_handler, mqtt_client)
 
 try:
     # Read configuration
@@ -107,6 +106,8 @@ try:
     servers = [ServerTypes[sr.server_type].value.from_ServerOptions(sr, clients) for sr in OPTIONS.servers]
     logger.info(f"{len(servers)} servers set up")
     # if len(servers) == 0: raise RuntimeError(f"No supported servers configured")
+
+    atexit.register(exit_handler, servers, clients, mqtt_client)
 
     sleep_if_midnight()
 
@@ -146,7 +147,7 @@ try:
                 mqtt_client.publish_to_ha(register_name, value, server)
             logger.info(f"Published all parameter values for {server.name=}")   
 
-            if not RECV_Q.empty(): message_handler(RECV_Q, servers)
+            # if not RECV_Q.empty(): message_handler(RECV_Q, servers)
 
         # publish availability
         sleep(pause_interval)

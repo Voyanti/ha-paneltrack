@@ -95,3 +95,7 @@ class PanelTrack(Server):
 # Declare all defined server abstractions here. Add to schema in config.yaml to enable selecting.
 class ServerTypes(Enum):
     PANELTRACK = PanelTrack
+
+
+if __name__ == "__main__":
+    pass

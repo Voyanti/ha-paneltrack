@@ -52,6 +52,9 @@ class MqttClient(mqtt.Client):
         self.on_message = on_message
 
     def publish_discovery_topics(self, server):
+        while not self.is_connected():
+            logger.info(f"Not connected to mqtt broker yet, sleep 100ms and retry. Before publishing discovery topics.")
+            sleep(0.1)
         # TODO check if more separation from server is necessary/ possible
         nickname = server.name
         if not server.model or not server.manufacturer or not server.serial or not nickname or not server.parameters:
@@ -89,18 +92,18 @@ class MqttClient(mqtt.Client):
 
         self.publish_availability(True, server)
 
-        for register_name, details in server.write_parameters.items():
-            discovery_payload = {
-                "name": register_name,
-                "unique_id": f"{nickname}_{slugify(register_name)}",
-                "command_topic": f"{self.base_topic}/{nickname}/{slugify(register_name)}/set",
-                "unit_of_measurement": details["unit"],
-                "availability_topic": availability_topic,
-                "device": device
-            }
+        # for register_name, details in server.write_parameters.items():
+        #     discovery_payload = {
+        #         "name": register_name,
+        #         "unique_id": f"{nickname}_{slugify(register_name)}",
+        #         "command_topic": f"{self.base_topic}/{nickname}/{slugify(register_name)}/set",
+        #         "unit_of_measurement": details["unit"],
+        #         "availability_topic": availability_topic,
+        #         "device": device
+        #     }
 
-            discovery_topic = f"{self.ha_discovery_topic}/number/{nickname}/{slugify(register_name)}/config"
-            self.publish(discovery_topic, json.dumps(discovery_payload), retain=True)
+        #     discovery_topic = f"{self.ha_discovery_topic}/number/{nickname}/{slugify(register_name)}/config"
+        #     self.publish(discovery_topic, json.dumps(discovery_payload), retain=True)
 
     def publish_to_ha(self, register_name, value, server):
         nickname = server.name
