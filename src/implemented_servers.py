@@ -38,10 +38,10 @@ class PanelTrack(Server):
         'SSum': {'addr': 47, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': 'apparent_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
         'pfSum': {'addr': 49, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': 'power_factor', 'register_type': RegisterTypes.HOLDING_REGISTER},
         'Freq': {'addr': 51, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'Hz', 'device_class': 'frequency', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'MonthkWhTotal': {'addr': 53, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'DaykWhTotal': {'addr': 55, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'TotalImportEnergy': {'addr': 57, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'TotalExportEnergy': {'addr': 59, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'MonthkWhTotal': {'addr': 53, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total_increasing'},
+        'DaykWhTotal': {'addr': 55, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total_increasing'},
+        'TotalImportEnergy': {'addr': 57, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
+        'TotalExportEnergy': {'addr': 59, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
     }
     ################################################################################################################################################
 

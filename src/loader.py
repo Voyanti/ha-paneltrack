@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def validate_nicknames(opts: Options):
     """
-    Verify unique names for clients and servers of options. Used as unique identifiers.
+    Verify unique alphanumeric names for clients and servers of options. Used as unique identifiers.
     """
     for cs in ('clients', 'servers'):
         names = [c.name for c in getattr(opts, cs)]
@@ -39,7 +39,7 @@ def validate_server_implemented(opts: Options):
         if server.server_type not in [t.name for t in ServerTypes]:
             raise ValueError(f"Server type {server.server_type} not defined in implemented_servers.ServerTypes")
 
-def load_options(json_rel_path="/data/options.json") -> tuple[dict, dict]:
+def load_options(json_rel_path="/data/options.json") -> Options:
     """ Load server, client configurations and connection specs as dicts from options json. """
     converter = Converter()
 

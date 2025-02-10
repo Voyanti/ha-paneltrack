@@ -9,7 +9,7 @@ from time import time, sleep
 from queue import Queue
 
 logger = logging.getLogger(__name__)
-RECV_Q = Queue()
+RECV_Q: Queue = Queue()
 
 def slugify(text):
     return text.replace(' ', '_').replace('(', '').replace(')', '').replace('/', 'OR').replace('&', ' ').replace(':', '').replace('.', '').lower()

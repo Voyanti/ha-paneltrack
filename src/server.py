@@ -16,7 +16,7 @@ class Server(metaclass=abc.ABCMeta):
         Includes functions to be abstracted by model/ manufacturer-specific implementations for 
         decoding, encoding data read/ write, reading model code, setting up model-specific registers and checking availability.
     """
-    def __init__(self, name, serial, modbus_id, connected_client):
+    def __init__(self, name, serial, modbus_id, connected_client) -> None:
         self.name: str = name
         self.serial: str = serial
         self.modbus_id: int = modbus_id
