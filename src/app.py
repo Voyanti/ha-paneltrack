@@ -4,7 +4,7 @@ import atexit
 import logging
 from queue import Queue
 
-from loader import load_options
+from loader import load_validate_options
 from options import Options
 from client import Client
 from implemented_servers import ServerTypes
@@ -93,7 +93,7 @@ def loop(servers: list[Server], mqtt_client: MqttClient, midnight_sleep_enabled,
 def main() -> None:
     try:
         # Read configuration
-        OPTIONS: Options = load_options()
+        OPTIONS: Options = load_validate_options()
         midnight_sleep_enabled, minutes_wakeup_after = OPTIONS.sleep_over_midnight, OPTIONS.sleep_midnight_minutes
         pause_interval = OPTIONS.pause_interval_seconds
     
