@@ -46,6 +46,16 @@ class Server(metaclass=abc.ABCMeta):
             -----------
                 - parameter_name: str: slave parameter name string as defined in register map
         """
+        device_class_to_rounding: dict[str, int] = {
+            'reactive_power': 0,
+            'energy': 1,
+            'frequency': 1,
+            'power_factor': 1,
+            'apparent_power': 0,
+            'current': 1,
+            'voltage': 0,
+            'power': 0
+        }
         param = self.parameters[parameter_name]
 
         address = param["addr"]
@@ -54,6 +64,7 @@ class Server(metaclass=abc.ABCMeta):
         # count = param.get('count', dtype.size // 2) #TODO
         count = param["count"] #TODO
         unit = param["unit"]
+        device_class = param['device_class']
         slave_id = self.modbus_id
         register_type = param['register_type']
 
@@ -68,7 +79,7 @@ class Server(metaclass=abc.ABCMeta):
         logger.info(f"Raw register begin value: {result.registers[0]}")
         val = self._decoded(result.registers, dtype)
         if multiplier != 1: val*=multiplier
-        if isinstance(val, int) or isinstance(val, float): val = round(val, 2)
+        if isinstance(val, int) or isinstance(val, float): val = round(val, device_class_to_rounding.get(device_class, 2))
         logger.info(f"Decoded Value = {val} {unit}")
 
         return val
