@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 from paho.mqtt.enums import CallbackAPIVersion
 import json
 import logging
-from loader import Options
+from .loader import Options
 
 from random import getrandbits
 from time import time, sleep

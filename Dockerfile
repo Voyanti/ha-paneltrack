@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Copy code
-COPY src/  ./
+COPY src/  ./src/
 COPY run.sh  ./
 
 # Run
