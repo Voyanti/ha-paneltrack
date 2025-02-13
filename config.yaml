@@ -1,5 +1,5 @@
 name: "Paneltrack"
-version: "0.1.5"
+version: "0.1.6"
 slug: "paneltrack_modbus"
 description: "Paneltrack"
 init: false
