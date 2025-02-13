@@ -4,12 +4,12 @@ import atexit
 import logging
 from queue import Queue
 
-from loader import load_validate_options
-from options import Options
-from client import Client
-from implemented_servers import ServerTypes
-from server import Server
-from modbus_mqtt import MqttClient, RECV_Q
+from .loader import load_validate_options
+from .options import Options
+from .client import Client
+from .implemented_servers import ServerTypes
+from .server import Server
+from .modbus_mqtt import MqttClient, RECV_Q
 from paho.mqtt.enums import MQTTErrorCode
 from paho.mqtt.client import MQTTMessage
 
@@ -18,7 +18,7 @@ import sys
 SPOOF = False
 if len(sys.argv) > 1:
     if sys.argv[1] == "SPOOF":
-        from client import SpoofClient as Client
+        from .client import SpoofClient as Client
 
         SPOOF = True
 
