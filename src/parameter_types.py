@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
-from enums import RegisterTypes, DataType
+from .enums import RegisterTypes, DataType
+
 
 @dataclass
 class ParamInfo:
@@ -13,6 +14,7 @@ class ParamInfo:
     register_type: RegisterTypes
     unit: Optional[str]
     multiplier: Optional[int]
+
 
 @dataclass
 class HAParamInfo:

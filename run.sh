@@ -5,4 +5,4 @@ echo "Hello Paneltrack"
 echo "---"
 
 cd /workdir
-python3 -u ./src/app.py
+python3 -u -m src.app

@@ -1,6 +1,4 @@
 .venv/
-.devcontainer/
-.vscode/tasks.json
 data/
 src/developing.ipynb
 requirements copy.txt
@@ -10,3 +8,5 @@ sungrow/registers.txt
 tree.txt
 sungrow/options.json
 schema.yaml
+.devcontainer/venv
+venv

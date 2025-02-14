@@ -1,5 +1,6 @@
-from enums import RegisterTypes, DataType
-from server import Server
+from typing import final
+from .enums import RegisterTypes, DataType
+from .server import Server
 from pymodbus.client import ModbusSerialClient
 import struct
 import logging
@@ -7,9 +8,9 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
+
+@final
 class PanelTrack(Server):
-    # Register Map
-    # Source https://github.com/heinrich321/voyanti-paneltrack/blob/main/paneltrack.py
     ################################################################################################################################################
     register_map = {
         'Vab': {'addr': 1, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
@@ -43,22 +44,29 @@ class PanelTrack(Server):
         'TotalImportEnergy': {'addr': 57, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
         'TotalExportEnergy': {'addr': 59, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
     }
+    # Source https://gith ub.com/heinrich321/voyanti-paneltrack/blob/main/paneltrack.py
     ################################################################################################################################################
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.supported_models = ('paneltrack',) 
-        self.manufacturer = "Paneltrack"
-        self.model = 'paneltrack'
-        self.parameters = PanelTrack.register_map
+        self._parameters = PanelTrack.register_map
         self.write_parameters = {}
 
-        # self.model = None
+    def parameters(self):
+        return self._parameters
+
+    def manufacturer(self):
+        return "Paneltrack"
+
+    def supported_models(self):
+        return 'paneltrack'
+
+    def model(self):
+        return ('paneltrack',)
 
     def read_model(self, device_type_code_param_key="Device Type Code"):
         return self.model
-    
+
     def setup_valid_registers_for_model(self):
         """ Removes invalid registers for the specific model of inverter.
             Requires self.model. Call self.read_model() first."""
@@ -70,16 +78,20 @@ class PanelTrack(Server):
     def _decode_f32(registers):
         raw = struct.pack('>HH', registers[0], registers[1])
         return struct.unpack('>f', raw)[0]
-    
+
     def _decode_i32(registers):
         raw = struct.pack('>HH', registers[0], registers[1])
         return struct.unpack('>I', raw)[0]
 
     @classmethod
     def _decoded(cls, registers, dtype):
-        if dtype == DataType.F32: return cls._decode_f32(registers)
-        elif dtype == DataType.I32: return cls._decode_i32(registers)
-        else: raise NotImplementedError(f"Data type {dtype} decoding not implemented")
+        if dtype == DataType.F32:
+            return cls._decode_f32(registers)
+        elif dtype == DataType.I32:
+            return cls._decode_i32(registers)
+        else:
+            raise NotImplementedError(
+                f"Data type {dtype} decoding not implemented")
 
     @classmethod
     def _encoded(cls, value):
@@ -87,12 +99,14 @@ class PanelTrack(Server):
             Supports U16 only.
         """
         pass
-   
-    def _validate_write_val(self, register_name:str, val):
+
+    def _validate_write_val(self, register_name: str, val):
         """ Model-specific writes might be necessary to support more models """
         pass
 
 # Declare all defined server abstractions here. Add to schema in config.yaml to enable selecting.
+
+
 class ServerTypes(Enum):
     PANELTRACK = PanelTrack
 
