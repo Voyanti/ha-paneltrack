@@ -100,9 +100,6 @@ class MqttClient(mqtt.Client):
                 discovery_payload['state_class'] = state_class
             discovery_topic = f"{self.ha_discovery_topic}/sensor/{nickname}/{slugify(register_name)}/config"
 
-            logger.info(f"{type(discovery_payload)}")
-            logger.info(f"{discovery_payload}")
-
             self.publish(discovery_topic, json.dumps(
                 discovery_payload), retain=True)
 

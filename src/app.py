@@ -163,7 +163,12 @@ def instantiate_servers(OPTIONS: Options, clients: list[Client]) -> list[Server]
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:   # running locally
+    if len(sys.argv) <= 1:  # deployed on homeassistant
+        app = App(instantiate_clients, instantiate_servers)
+        app.setup()
+        app.connect()
+        app.loop()
+    else:                   # running locally
         from .client import SpoofClient
         app = App(instantiate_clients, instantiate_servers, sys.argv[1])
         app.OPTIONS.mqtt_host = "localhost"
@@ -183,11 +188,6 @@ if __name__ == "__main__":
             s.connect = lambda: None
         app.connect()
         app.loop(True)
-    else:                   # deployed on homeassistant
-        app = App(instantiate_clients, instantiate_servers)
-        app.setup()
-        app.connect()
-        app.loop()
 
     # finally:
-    #     exit_handler(servers, clients, mqtt_client)
+    #     exit_handler(servers, clients, mqtt_client) TODO NB
