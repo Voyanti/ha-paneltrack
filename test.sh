@@ -7,12 +7,13 @@ export PYTHONPATH=src/
 echo "TESTS Start Mosquitto in the background"
 echo ""
 mosquitto -p 1884 -d
-MOSQUITTO_PID=$!
+# MOSQUITTO_PID=$!
 
 echo "TESTS Run unittests"
 echo ""
 python3 -m unittest -v
 
 echo "TESTS Stop Mosquitto"
+sleep 0.5
 echo ""
-kill $MOSQUITTO_PID
+kill $(pgrep -f "mosquitto -p 1884")

@@ -27,10 +27,10 @@ options:
   pause_interval_seconds: 10
   sleep_over_midnight: true
   sleep_midnight_minutes: 10
-  mqtt_host: "192.168.1.104"
-  mqtt_port: 1883
-  # mqtt_host: "localhost"
-  # mqtt_port: 1884
+  # mqtt_host: "192.168.1.104"
+  # mqtt_port: 1883
+  mqtt_host: "localhost"
+  mqtt_port: 1884
   mqtt_user: "mqtt"
   mqtt_password: "mqtt-users"
   mwtt_ha_discovery_topic: "homeassistant"

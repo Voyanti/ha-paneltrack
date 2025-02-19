@@ -3,13 +3,15 @@
   // "build": {
   //   "dockerfile": "Dev_Dockerfile"
   // },
-  "image": "ghcr.io/home-assistant/devcontainer:2-addons",
+  // "image": "ghcr.io/home-assistant/devcontainer:addons",
+  "image": "ghcr.io/home-assistant/devcontainer:addons-6f876ce",
+  // "image": "ghcr.io/home-assistant/devcontainer:2-addons",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {}
   },
   "appPort": ["7123:8123", "7357:4357"],
   // "postStartCommand": "bash devcontainer_bootstrap",
-  "postStartCommand":"bash devcontainer_bootstrap; python3 -m venv .devcontainer/venv; source .devcontainer/venv/bin/activate; pip install -r requirements.txt; sudo apt update; sudo apt install mosquitto",
+  "postStartCommand":"bash devcontainer_bootstrap; python3 -m venv .devcontainer/venv; . .devcontainer/venv/bin/activate; pip install -r requirements.txt; sudo apt update; sudo apt install -y systemd-container dbus",
   "runArgs": ["-e", "GIT_EDITOR=code --wait", "--privileged"],
   "containerEnv": {
     "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"

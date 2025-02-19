@@ -59,10 +59,10 @@ class PanelTrack(Server):
         return "Paneltrack"
 
     def supported_models(self):
-        return 'paneltrack'
+        return ('paneltrack',)
 
     def model(self):
-        return ('paneltrack',)
+        return 'paneltrack'
 
     def read_model(self, device_type_code_param_key="Device Type Code"):
         return self.model
