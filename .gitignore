@@ -10,3 +10,4 @@ sungrow/options.json
 schema.yaml
 .devcontainer/venv
 venv
+pdfs/*
