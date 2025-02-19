@@ -1,15 +1,12 @@
 from abc import abstractmethod, ABC
 import logging
 from typing import Optional, TypedDict
-from .enums import DataType, RegisterTypes
+from .enums import DataType, RegisterTypes, Parameter, DeviceClass
 from .client import Client
 from .options import ServerOptions
 from .parameter_types import ParamInfo, HAParamInfo
 
 logger = logging.getLogger(__name__)
-
-Parameter = TypedDict("Parameter", {'addr': int, 'count': int, 'dtype': DataType,
-                      'multiplier': float, 'unit': str, 'device_class': str, 'register_type': RegisterTypes})
 
 
 class Server(ABC):
@@ -133,15 +130,15 @@ class Server(ABC):
             -----------
                 - parameter_name: str: slave parameter name string as defined in register map
         """
-        device_class_to_rounding: dict[str, int] = {
-            'reactive_power': 0,
-            'energy': 1,
-            'frequency': 1,
-            'power_factor': 1,
-            'apparent_power': 0,
-            'current': 1,
-            'voltage': 0,
-            'power': 0
+        device_class_to_rounding: dict[DeviceClass, int] = {    # TODO define in deviceClass type
+            DeviceClass.REACTIVE_POWER: 0,
+            DeviceClass.ENERGY: 1,
+            DeviceClass.FREQUENCY: 1,
+            DeviceClass.POWER_FACTOR: 1,
+            DeviceClass.APPARENT_POWER: 0, 
+            DeviceClass.CURRENT: 1,
+            DeviceClass.VOLTAGE: 0,
+            DeviceClass.POWER: 0
         }
         param = self.parameters[parameter_name]  # type: ignore
 
