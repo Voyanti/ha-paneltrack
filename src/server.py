@@ -9,7 +9,7 @@ from .parameter_types import ParamInfo, HAParamInfo
 logger = logging.getLogger(__name__)
 
 Parameter = TypedDict("Parameter", {'addr': int, 'count': int, 'dtype': DataType,
-                      'multiplier': int, 'unit': str, 'device_class': str, 'register_type': RegisterTypes})
+                      'multiplier': float, 'unit': str, 'device_class': str, 'register_type': RegisterTypes})
 
 
 class Server(ABC):
@@ -26,6 +26,8 @@ class Server(ABC):
         self.modbus_id: int = modbus_id
         self.connected_client: Client = connected_client
 
+        self._model: str = "unknown"
+
         logger.info(f"Server {self.name} set up.")
 
     def __str__(self):
@@ -35,6 +37,7 @@ class Server(ABC):
     @abstractmethod
     def supported_models(self) -> tuple[str, ...]:
         """ Return a tuple of string names of all supported models for the implementation."""
+
     @property
     @abstractmethod
     def manufacturer(self) -> str:
@@ -42,13 +45,16 @@ class Server(ABC):
 
     @property
     @abstractmethod
-    def model(self) -> str:
-        """ Return a string model name for the implementation."""
-
-    @property
-    @abstractmethod
     def parameters(self) -> dict[str, Parameter]:
         """ Return a string model name for the implementation."""
+
+    @abstractmethod
+    def read_model(self) -> str:
+        """
+            Reads model name register if available and decodes it.
+
+            :returns: model_name
+        """
 
     @abstractmethod
     def setup_valid_registers_for_model(self):
@@ -74,13 +80,15 @@ class Server(ABC):
     def _encoded(cls, content):
         "Server-specific encoding of content"
 
-    @abstractmethod
-    def read_model(self) -> str:
-        """
-            Reads model name register if available and decodes it.
-
-            :returns: model_name
-        """
+    @property
+    def model(self) -> str:
+        """ Return a string model name for the implementation.
+            Ahould be read in using server.read_model(). 
+            server.set_model is called in server.connect(), which sets the model.
+            
+            model is used in seupt_valid_registers_for_model
+            Provided to fascilitate server types where the model cannot be read."""
+        return self._model
 
     def set_model(self):
         """
@@ -135,8 +143,7 @@ class Server(ABC):
             'voltage': 0,
             'power': 0
         }
-        # self.parameters is not callable in abstract base class
-        param = self.parameters()[parameter_name]  # type: ignore
+        param = self.parameters[parameter_name]  # type: ignore
 
         address = param["addr"]
         dtype = param["dtype"]

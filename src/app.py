@@ -105,7 +105,7 @@ class App:
         # every read_interval seconds, read the registers and publish to mqtt
         while True:
             for server in self.servers:
-                for register_name, details in server.parameters().items():
+                for register_name, details in server.parameters.items():
                     sleep(READ_INTERVAL)
                     value = server.read_registers(register_name)
                     self.mqtt_client.publish_to_ha(
