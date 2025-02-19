@@ -92,7 +92,7 @@ class MqttClient(mqtt.Client):
                 "state_topic": state_topic,
                 "availability_topic": availability_topic,
                 "device": device,
-                "device_class": details["device_class"],
+                "device_class": details["device_class"].value,
                 "unit_of_measurement": details["unit"],
             }
             state_class = details.get("state_class", False)
