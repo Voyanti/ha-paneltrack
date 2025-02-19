@@ -1,5 +1,5 @@
 from typing import final
-from .enums import RegisterTypes, DataType
+from .enums import DeviceClass, RegisterTypes, DataType
 from .server import Server
 from pymodbus.client import ModbusSerialClient
 import struct
@@ -13,36 +13,36 @@ logger = logging.getLogger(__name__)
 class PanelTrack(Server):
     ################################################################################################################################################
     register_map = {
-        'Vab': {'addr': 1, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Vbc': {'addr': 3, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Vca': {'addr': 5, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Va': {'addr': 7, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Vb': {'addr': 9, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Vc': {'addr': 11, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': 'voltage', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Ia': {'addr': 13, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'A', 'device_class': 'current', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Ib': {'addr': 15, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'A', 'device_class': 'current', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Ic': {'addr': 17, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'A', 'device_class': 'current', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Pa': {'addr': 19, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': 'power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Pb': {'addr': 21, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': 'power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Pc': {'addr': 23, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': 'power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Qa': {'addr': 25, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': 'reactive_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Qb': {'addr': 27, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': 'reactive_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Qc': {'addr': 29, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': 'reactive_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Sa': {'addr': 31, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': 'apparent_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Sb': {'addr': 33, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': 'apparent_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Sc': {'addr': 35, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': 'apparent_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Pfa': {'addr': 37, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': 'power_factor', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Pfb': {'addr': 39, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': 'power_factor', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Pfc': {'addr': 41, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': 'power_factor', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'PSum': {'addr': 43, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': 'power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'QSum': {'addr': 45, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': 'reactive_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'SSum': {'addr': 47, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': 'apparent_power', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'pfSum': {'addr': 49, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': 'power_factor', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'Freq': {'addr': 51, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'Hz', 'device_class': 'frequency', 'register_type': RegisterTypes.HOLDING_REGISTER},
-        'MonthkWhTotal': {'addr': 53, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total_increasing'},
-        'DaykWhTotal': {'addr': 55, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total_increasing'},
-        'TotalImportEnergy': {'addr': 57, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
-        'TotalExportEnergy': {'addr': 59, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': 'energy', 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
+        'Vab': {'addr': 1, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': DeviceClass.VOLTAGE, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Vbc': {'addr': 3, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': DeviceClass.VOLTAGE, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Vca': {'addr': 5, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': DeviceClass.VOLTAGE, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Va': {'addr': 7, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': DeviceClass.VOLTAGE, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Vb': {'addr': 9, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': DeviceClass.VOLTAGE, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Vc': {'addr': 11, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'V', 'device_class': DeviceClass.VOLTAGE, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Ia': {'addr': 13, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'A', 'device_class': DeviceClass.CURRENT, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Ib': {'addr': 15, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'A', 'device_class': DeviceClass.CURRENT, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Ic': {'addr': 17, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'A', 'device_class': DeviceClass.CURRENT, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Pa': {'addr': 19, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': DeviceClass.POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Pb': {'addr': 21, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': DeviceClass.POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Pc': {'addr': 23, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': DeviceClass.POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Qa': {'addr': 25, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': DeviceClass.REACTIVE_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Qb': {'addr': 27, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': DeviceClass.REACTIVE_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Qc': {'addr': 29, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': DeviceClass.REACTIVE_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Sa': {'addr': 31, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': DeviceClass.APPARENT_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Sb': {'addr': 33, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': DeviceClass.APPARENT_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Sc': {'addr': 35, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': DeviceClass.APPARENT_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Pfa': {'addr': 37, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': DeviceClass.POWER_FACTOR, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Pfb': {'addr': 39, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': DeviceClass.POWER_FACTOR, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Pfc': {'addr': 41, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': DeviceClass.POWER_FACTOR, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'PSum': {'addr': 43, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'W', 'device_class': DeviceClass.POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'QSum': {'addr': 45, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'var', 'device_class': DeviceClass.REACTIVE_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'SSum': {'addr': 47, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'VA', 'device_class': DeviceClass.APPARENT_POWER, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'pfSum': {'addr': 49, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': '', 'device_class': DeviceClass.POWER_FACTOR, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'Freq': {'addr': 51, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'Hz', 'device_class': DeviceClass.FREQUENCY, 'register_type': RegisterTypes.HOLDING_REGISTER},
+        'MonthkWhTotal': {'addr': 53, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': DeviceClass.ENERGY, 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total_increasing'},
+        'DaykWhTotal': {'addr': 55, 'count': 2, 'dtype': DataType.F32, 'multiplier': 1, 'unit': 'kWh', 'device_class': DeviceClass.ENERGY, 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total_increasing'},
+        'TotalImportEnergy': {'addr': 57, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': DeviceClass.ENERGY, 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
+        'TotalExportEnergy': {'addr': 59, 'count': 2, 'dtype': DataType.I32, 'multiplier': 1, 'unit': 'kWh', 'device_class': DeviceClass.ENERGY, 'state_class': 'total_increasing', 'register_type': RegisterTypes.HOLDING_REGISTER, 'state_class': 'total'},
     }
     # Source https://gith ub.com/heinrich321/voyanti-paneltrack/blob/main/paneltrack.py
     ################################################################################################################################################
@@ -52,15 +52,19 @@ class PanelTrack(Server):
         self._parameters = PanelTrack.register_map
         self.write_parameters = {}
 
+    @property
     def parameters(self):
         return self._parameters
 
+    @property
     def manufacturer(self):
         return "Paneltrack"
 
+    @property
     def supported_models(self):
         return ('paneltrack',)
 
+    @property
     def model(self):
         return 'paneltrack'
 
