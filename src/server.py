@@ -86,6 +86,10 @@ class Server(ABC):
             model is used in seupt_valid_registers_for_model
             Provided to fascilitate server types where the model cannot be read."""
         return self._model
+    
+    @model.setter
+    def model(self, value):
+        self._model = value
 
     def set_model(self):
         """
