@@ -51,6 +51,7 @@ class PanelTrack(Server):
         super().__init__(*args, **kwargs)
         self._parameters = PanelTrack.register_map
         self.write_parameters = {}
+        self._model = "paneltrack"
 
     @property
     def parameters(self):
@@ -63,10 +64,6 @@ class PanelTrack(Server):
     @property
     def supported_models(self):
         return ('paneltrack',)
-
-    @property
-    def model(self):
-        return 'paneltrack'
 
     def read_model(self, device_type_code_param_key="Device Type Code"):
         return self.model
@@ -116,4 +113,5 @@ class ServerTypes(Enum):
 
 
 if __name__ == "__main__":
-    pass
+    serv = PanelTrack(name="", serial="", modbus_id=1, connected_client=None)
+    serv.set_model()

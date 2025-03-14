@@ -242,3 +242,4 @@ class Server(ABC):
         connected_client = clients[idx]
 
         return cls(name, serial, modbus_id, connected_client)
+
