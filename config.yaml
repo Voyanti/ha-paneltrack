@@ -1,6 +1,7 @@
 name: "Paneltrack"
-version: "0.1.9"
-slug: "paneltrack_modbus"
+version: "0.1.10"
+image: ghcr.io/voyanti/ha-paneltrack
+slug: "ha-paneltrack"
 description: "Paneltrack"
 init: false
 startup: application
