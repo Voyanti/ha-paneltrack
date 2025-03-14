@@ -157,7 +157,7 @@ class Server(ABC):
         register_type = param['register_type']
 
         # TODO count
-        logger.info(
+        logger.debug(
             f"Reading param {parameter_name} ({register_type}) of {dtype=} from {address=}, {multiplier=}, {count=}, {self.modbus_id=}")
 
         result = self.connected_client.read(
@@ -167,14 +167,14 @@ class Server(ABC):
             self.connected_client._handle_error_response(result)
             raise Exception(f"Error reading register {parameter_name}")
 
-        logger.info(f"Raw register begin value: {result.registers[0]}")
+        logger.debug(f"Raw register begin value: {result.registers[0]}")
         val = self._decoded(result.registers, dtype)
         if multiplier != 1:
             val *= multiplier
         if isinstance(val, int) or isinstance(val, float):
             val = round(
                 val, device_class_to_rounding.get(device_class, 2))
-        logger.info(f"Decoded Value = {val} {unit}")
+        logger.info(f"Read {parameter_name} = {val} {unit}")
 
         return val
 
