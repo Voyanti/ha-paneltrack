@@ -6,6 +6,10 @@ on:
       - main  # Change this if needed
   pull_request:
 
+permissions:
+  contents: read
+  packages: write  # Required to push to GHCR
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -61,7 +65,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
         if: env.SKIP_BUILD == 'false'  # Only set up if build is needed
