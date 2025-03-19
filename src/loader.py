@@ -4,6 +4,8 @@ import os
 import logging
 import yaml
 from cattrs import structure, unstructure, Converter
+
+from .helpers import slugify
 from .options import *
 from .implemented_servers import ServerTypes
 
@@ -26,7 +28,8 @@ def validate_names(names: list) -> None:
     """
     Verify unique alphanumeric names for clients and servers of options. Used as unique identifiers.
     """
-    if len(set(names)) != len(names):
+    slug_names = [slugify(name) for name in names]
+    if len(set(slug_names)) != len(slug_names):
         raise ValueError(f"Device/ Client names must be unique")
 
     if not all([[substring.isalnum() for substring in c.split(" ")] for c in names]):
