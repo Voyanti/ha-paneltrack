@@ -119,8 +119,8 @@ class SpoofClient:
 
         def isError(self): return False
 
-    def __init__(self):
-        self.name = "Client1"
+    def __init__(self, name: str):
+        self.name = name
 
     def read(self, address, count, slave_id, register_type):
         logger.info(f"SPOOFING READ")

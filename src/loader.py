@@ -29,7 +29,7 @@ def validate_names(names: list) -> None:
     if len(set(names)) != len(names):
         raise ValueError(f"Device/ Client names must be unique")
 
-    if not all([c.isalnum() for c in names]):
+    if not all([[substring.isalnum() for substring in c.split(" ")] for c in names]):
         raise ValueError(f"Client names must be alphanumeric")
 
 

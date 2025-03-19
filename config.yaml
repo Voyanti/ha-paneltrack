@@ -1,5 +1,5 @@
 name: "Paneltrack"
-version: "0.1.14"
+version: "0.1.15"
 image: ghcr.io/voyanti/ha-paneltrack
 slug: "ha-paneltrack"
 description: "Paneltrack"
@@ -15,16 +15,51 @@ arch:
   - i386
 options:
   servers:
-    - name: "PT1"
-      serialnum: "unknown"
-      server_type: "PANELTRACK"
-      connected_client: "Client1"
-      modbus_id: 3
+  - name: PlaasRes
+    serialnum: NPNT4161220
+    server_type: PANELTRACK
+    connected_client: Client1
+    modbus_id: 2
+  - name: JohanEnStoor
+    serialnum: NPNT4151220
+    server_type: PANELTRACK
+    connected_client: Client1
+    modbus_id: 1
+  - name: WerkersHuise
+    serialnum: NPNT5520823
+    server_type: PANELTRACK
+    connected_client: Client1
+    modbus_id: 3
+
+  - name: PT 5 # Bottling Factory
+    serialnum: NPNT5530823
+    server_type: PANELTRACK
+    connected_client: Client2
+    modbus_id: 5
+  - name: PT 3 # Total Post Inverter
+    serialnum: NPNT4191220
+    server_type: PANELTRACK
+    connected_client: Client2
+    modbus_id: 3
+  - name: PT 4 # Farm Total
+    serialnum: NPNT4201220
+    server_type: PANELTRACK
+    connected_client: Client2
+    modbus_id: 4
+  - name: PT_6 # Drakenstein Mainfeed
+    serialnum: NPNT4141220823
+    server_type: PANELTRACK
+    connected_client: Client2
+    modbus_id: 6
   clients:
-    - name: "Client1"
-      type: "TCP"
-      host: "192.168.1.91"
-      port: 1234
+  - name: Client1
+    type: TCP
+    host: 192.168.1.246
+    port: 502
+  - name: Client2
+    type: TCP
+    host: 192.168.1.190
+    port: 502
   pause_interval_seconds: 10
   sleep_over_midnight: true
   sleep_midnight_minutes: 10

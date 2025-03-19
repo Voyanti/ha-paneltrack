@@ -234,6 +234,7 @@ class Server(ABC):
         modbus_id: int = opts.modbus_id           # modbus slave_id
 
         try:
+            logger.info(f"{[str(client) for client in clients]}")
             idx = [str(client) for client in clients].index(
                 opts.connected_client)  # TODO ugly
         except:

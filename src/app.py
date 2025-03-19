@@ -174,8 +174,8 @@ if __name__ == "__main__":
         app.OPTIONS.mqtt_host = "localhost"
         app.OPTIONS.mqtt_port = 1884
 
-        def instantiate_spoof_clients(Options) -> list[SpoofClient]:
-            return [SpoofClient()]
+        def instantiate_spoof_clients(OPTS: Options) -> list[SpoofClient]:
+            return [SpoofClient(client_opts.name) for client_opts in OPTS.clients]
 
         app = App(
             client_instantiator_callback=instantiate_spoof_clients,
