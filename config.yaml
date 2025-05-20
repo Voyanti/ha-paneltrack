@@ -1,5 +1,5 @@
 name: "Paneltrack"
-version: "0.1.16"
+version: "0.1.17"
 image: ghcr.io/voyanti/ha-paneltrack
 slug: "ha-paneltrack"
 description: "Paneltrack"
@@ -61,8 +61,8 @@ options:
     host: 192.168.1.190
     port: 502
   pause_interval_seconds: 10
-  sleep_over_midnight: true
-  sleep_midnight_minutes: 10
+  midnight_sleep_enabled: true
+  midnight_sleep_wakeup_after: 10
   # mqtt_host: "192.168.1.104"
   # mqtt_port: 1883
   mqtt_host: "localhost"
@@ -71,6 +71,7 @@ options:
   mqtt_password: "mqtt-users"
   mwtt_ha_discovery_topic: "homeassistant"
   mqtt_base_topic: "modbus"
+  mqtt_reconnect_attempts: 5
 schema:
   servers:
     - name: str
@@ -88,11 +89,12 @@ schema:
       parity: bool?
       stopbits: int?
   pause_interval_seconds: int
-  sleep_over_midnight: bool
-  sleep_midnight_minutes: int
+  midnight_sleep_enabled: bool
+  midnight_sleep_wakeup_after: int
   mqtt_host: str
   mqtt_port: port
   mqtt_user: str
   mqtt_password: password
   mwtt_ha_discovery_topic: str
   mqtt_base_topic: str
+  mqtt_reconnect_attempts: int

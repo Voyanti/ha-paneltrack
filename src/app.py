@@ -5,7 +5,7 @@ import logging
 from queue import Queue
 
 from .loader import load_validate_options
-from .options import Options
+from .options import AppOptions
 from .client import Client
 from .implemented_servers import ServerTypes
 from .server import Server
@@ -42,14 +42,14 @@ def exit_handler(
 
 class App:
     def __init__(self, client_instantiator_callback, server_instantiator_callback, options_rel_path=None) -> None:
-        self.OPTIONS: Options
+        self.OPTIONS: AppOptions
         # Read configuration
         if options_rel_path:
             self.OPTIONS = load_validate_options(options_rel_path)
         else:
             self.OPTIONS = load_validate_options()
 
-        self.midnight_sleep_enabled, self.minutes_wakeup_after = self.OPTIONS.sleep_over_midnight, self.OPTIONS.sleep_midnight_minutes
+        self.midnight_sleep_enabled, self.minutes_wakeup_after = self.OPTIONS.midnight_sleep_enabled, self.OPTIONS.midnight_sleep_wakeup_after
         self.pause_interval = self.OPTIONS.pause_interval_seconds
         # midnight_sleep_enabled=True, minutes_wakeup_after=5
 
@@ -91,6 +91,9 @@ class App:
 
         sleep(READ_INTERVAL)
         self.mqtt_client.loop_start()
+        sleep(READ_INTERVAL)
+
+        self.mqtt_client.ensure_connected(self.OPTIONS.mqtt_reconnect_attempts)
 
         # Publish Discovery Topics
         for server in self.servers:
@@ -104,6 +107,8 @@ class App:
 
         # every read_interval seconds, read the registers and publish to mqtt
         while True:
+            self.mqtt_client.ensure_connected(self.OPTIONS.mqtt_reconnect_attempts)
+
             for server in self.servers:
                 for register_name, details in server.parameters.items():
                     sleep(READ_INTERVAL)
@@ -151,11 +156,11 @@ class App:
             sleep(sleep_duration)
 
 
-def instantiate_clients(OPTIONS: Options) -> list[Client]:
+def instantiate_clients(OPTIONS: AppOptions) -> list[Client]:
     return [Client(cl_options) for cl_options in OPTIONS.clients]
 
 
-def instantiate_servers(OPTIONS: Options, clients: list[Client]) -> list[Server]:
+def instantiate_servers(OPTIONS: AppOptions, clients: list[Client]) -> list[Server]:
     return [
         ServerTypes[sr.server_type].value.from_ServerOptions(sr, clients)
         for sr in OPTIONS.servers
@@ -174,7 +179,7 @@ if __name__ == "__main__":
         app.OPTIONS.mqtt_host = "localhost"
         app.OPTIONS.mqtt_port = 1884
 
-        def instantiate_spoof_clients(OPTS: Options) -> list[SpoofClient]:
+        def instantiate_spoof_clients(OPTS: AppOptions) -> list[SpoofClient]:
             return [SpoofClient(client_opts.name) for client_opts in OPTS.clients]
 
         app = App(
