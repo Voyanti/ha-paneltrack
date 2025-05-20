@@ -54,8 +54,14 @@ class MqttClient(mqtt.Client):
 
         def on_message(client, userdata, message):
             logger.info("Received message on MQTT")
-            sleep(0.01)
-            RECV_Q.put(message)                         # thread-safe
+            try: 
+                sleep(0.01)
+                RECV_Q.put(message)                         # thread-safe
+            except Exception as e:
+                logger.error(f"Exception while handling received message. Stop Process. \n {e}")
+                os.kill(os.getpid(), signal.SIGINT)
+
+
 
         self.on_connect = on_connect
         self.on_disconnect = on_disconnect
