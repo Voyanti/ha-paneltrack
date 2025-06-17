@@ -1,6 +1,8 @@
 from abc import abstractmethod, ABC
 import logging
 from typing import Optional, TypedDict
+
+from pymodbus import ModbusException
 from .enums import DataType, RegisterTypes, Parameter, DeviceClass
 from .client import Client
 from .options import ServerOptions
@@ -115,10 +117,16 @@ class Server(ABC):
         count = self.parameters[register_name]['count']
         register_type = self.parameters[register_name]['register_type']
         slave_id = self.modbus_id
+        
+        # if device is completely offline e.g. power out
+        try: 
+            response = self.connected_client.read(
+                address, count, slave_id, register_type)
+        except ModbusException as e:
+            logger.error(f"{e.with_traceback}")
+            return False
 
-        response = self.connected_client.read(
-            address, count, slave_id, register_type)
-
+        # other errors
         if response.isError():
             self.connected_client._handle_error_response(response)
             available = False
@@ -208,12 +216,14 @@ class Server(ABC):
     #                                                  value=values,
     #                                                  slave=slave_id)
 
-    def connect(self):
+    def connect(self) -> bool:
         if not self.is_available():
             logger.error(f"Server {self.name} not available")
-            raise ConnectionError()
+            return False
+        
         self.set_model()
         self.setup_valid_registers_for_model()
+        return True
 
     @classmethod
     def from_ServerOptions(

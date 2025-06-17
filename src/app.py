@@ -74,8 +74,15 @@ class App:
         for client in self.clients:
             client.connect()
 
+        connected_servers = list()
         for server in self.servers:
-            server.connect()
+            success: bool = server.connect()
+            if success:
+                connected_servers.append(server) 
+            else:
+                logger.error(f"Error Connecting to server {server.name}. Disable reading untill next reboot")
+        self.servers = connected_servers
+
 
         # Setup MQTT Client
         self.mqtt_client = MqttClient(self.OPTIONS)
@@ -101,9 +108,9 @@ class App:
 
     def loop(self, loop_once=False) -> None:
         if not self.servers or not self.clients:
-            logger.info(f"In loop but app servers or clients not setup up")
+            logger.info(f"In loop but no app servers or clients setup up or available")
             raise ValueError(
-                f"In loop but app servers or clients not setup up")
+                f"In loop but no app servers or clients setup up or available")
 
         # every read_interval seconds, read the registers and publish to mqtt
         while True:
