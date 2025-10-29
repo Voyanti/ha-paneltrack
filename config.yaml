@@ -1,5 +1,5 @@
 name: "Paneltrack"
-version: "0.1.20"
+version: "0.1.21"
 image: ghcr.io/voyanti/ha-paneltrack
 slug: "ha-paneltrack"
 description: "Paneltrack"

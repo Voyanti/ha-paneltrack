@@ -2,6 +2,7 @@ from .enums import RegisterTypes
 from .options import ModbusTCPOptions, ModbusRTUOptions
 from pymodbus.client import ModbusSerialClient, ModbusTcpClient
 from pymodbus.pdu import ExceptionResponse
+from pymodbus import ModbusException
 import logging
 from time import sleep
 logger = logging.getLogger(__name__)
@@ -37,19 +38,34 @@ class Client:
                                              stopbits=cl_options.stopbits)
 
     def read(self, address, count, slave_id, register_type):
-        if register_type == RegisterTypes.HOLDING_REGISTER:
-            result = self.client.read_holding_registers(address=address-1,
-                                                        count=count,
-                                                        slave=slave_id)
-        elif register_type == RegisterTypes.INPUT_REGISTER:
-            result = self.client.read_input_registers(address=address-1,
-                                                      count=count,
-                                                      slave=slave_id)
-        else:
-            # will maybe never happen?
-            logger.info(f"unsupported register type {register_type}")
-            raise ValueError(f"unsupported register type {register_type}")
-        return result
+        """
+        Read modbus registers with proper error handling.
+
+        Handles both ModbusException (connection/communication failures) and
+        device-reported errors (checked via result.isError()).
+
+        Returns:
+            Response object with registers or error state
+
+        Raises:
+            ModbusException: Re-raised for connection/communication failures
+        """
+        try:
+            if register_type == RegisterTypes.HOLDING_REGISTER:
+                result = self.client.read_holding_registers(address=address-1,
+                                                            count=count,
+                                                            slave=slave_id)
+            elif register_type == RegisterTypes.INPUT_REGISTER:
+                result = self.client.read_input_registers(address=address-1,
+                                                          count=count,
+                                                          slave=slave_id)
+            else:
+                logger.info(f"unsupported register type {register_type}")
+                raise ValueError(f"unsupported register type {register_type}")
+            return result
+        except ModbusException as exc:
+            logger.error(f"ModbusException reading slave {slave_id} at address {address}: {exc}")
+            raise
 
     def connect(self, num_retries=2, sleep_interval=3) -> None:
         logger.info(f"Connecting to client {self}")
@@ -123,7 +139,7 @@ class SpoofClient:
         self.name = name
 
     def read(self, address, count, slave_id, register_type):
-        logger.info(f"SPOOFING READ")
+        logger.info(f"SPOOFING READ {slave_id=} {address=}")
         response = SpoofClient.SpoofResponse([73 for _ in range(count)])
         return response
 

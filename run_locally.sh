@@ -9,7 +9,7 @@ mosquitto -p 1884 -d
 echo "Hello Paneltrack"
 echo "---"
 
-python3 -m src.app data/options.yaml
+python3 -m src.app config.yaml
 
 echo "sleep 3s"
 sleep 3

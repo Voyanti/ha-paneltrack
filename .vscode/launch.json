@@ -13,6 +13,19 @@
             "args": [
                 "SPOOF"
             ]
+        },
+        {
+            "name": "Python: Current Module with Env Vars and args",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "${command:extension.commandvariable.file.relativeDirDots}.${fileBasenameNoExtension}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "${command:pickArgs}"
+            ]
         }
     ]
 }

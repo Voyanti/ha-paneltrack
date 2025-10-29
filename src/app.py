@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 import atexit
 import logging
 from queue import Queue
+from typing import Callable
+
+from pymodbus import ModbusException
 
 from .loader import load_validate_options
 from .options import AppOptions
@@ -53,9 +56,11 @@ class App:
         self.pause_interval = self.OPTIONS.pause_interval_seconds
         # midnight_sleep_enabled=True, minutes_wakeup_after=5
 
+        self.disconnect_stack = []
+
         # Setup callbacks
         self.client_instantiator_callback = client_instantiator_callback
-        self.server_instantiator_callback = server_instantiator_callback
+        self.server_instantiator_callback: Callable[[AppOptions, list[Client]], list[Server]] = server_instantiator_callback
 
     def setup(self) -> None:
         self.sleep_if_midnight()
@@ -75,8 +80,8 @@ class App:
             client.connect()
 
         # Unavailable servers are noted for reconnect attempts later. Does not cause a crash
-        connected_servers = list()
-        disconnected_servers = list()
+        connected_servers = []
+        disconnected_servers= []
         for server in self.servers:
             success: bool = server.connect()
             if success:
@@ -84,8 +89,8 @@ class App:
             else:
                 logger.error(f"Error Connecting to server {server.name}. Disable reading untill next loop")
                 disconnected_servers.append(server)
-        self.servers = connected_servers
-        self.disconnected_servers = disconnected_servers
+        self.servers: list[Server]= connected_servers
+        self.disconnected_servers: list[Server] = disconnected_servers
 
 
         # Setup MQTT Client
@@ -113,42 +118,55 @@ class App:
         for server in self.servers:
             self.mqtt_client.publish_discovery_topics(server)
 
-    def loop(self, loop_once=False) -> None:
+    def loop(self, loop_count: int | None = None) -> None:
         # if not self.servers or not self.clients:
         #     logger.info(f"In loop but no app servers or clients setup up or available")
         #     raise ValueError(
         #         f"In loop but no app servers or clients setup up or available")
 
         # every read_interval seconds, read the registers and publish to mqtt
+        i = 0
         while True:
             self.mqtt_client.ensure_connected(self.OPTIONS.mqtt_reconnect_attempts)
 
             for server in self.servers:
-                for register_name, details in server.parameters.items():
-                    sleep(READ_INTERVAL)
-                    value = server.read_registers(register_name)
-                    self.mqtt_client.publish_to_ha(
-                        register_name, value, server)
-                logger.info(
-                    f"Published all parameter values for {server.name=}")
+                sleep(READ_INTERVAL)
+                try: 
+                    for register_name, details in server.parameters.items():
+                        value = server.read_registers(register_name)
+                        self.mqtt_client.publish_to_ha(
+                            register_name, value, server)
+                    logger.info(
+                        f"Published all parameter values for {server.name=}")
+                except ModbusException as e:
+                    logger.error(f"Error reading register from {server.name=}: {e} ")
+                    self.disconnect_stack.append(server)
+                    continue
 
-            if loop_once:
-                break
+            for disconn_server in self.disconnect_stack:
+                self.servers.remove(disconn_server)
+                self.disconnected_servers.append(disconn_server)
+            self.disconnect_stack = []
 
-            # publish availability
+            # TODO: publish availability
             sleep(self.pause_interval)
-
 
             # try reconnecting to disconnected servers
             for server in reversed(self.disconnected_servers):
+                logger.info("Retrying connection to %s" % server.name)
                 success: bool = server.connect()
                 if success:
+                    logger.info("Succesfully reconnected to %s" % server.name)
                     self.servers.append(server) 
                     self.disconnected_servers.pop()
                 else:
-                    logger.error(f"Error Connecting to server {server.name}. Disable reading untill next loop")
+                    logger.error(f"Error Connecting to server %s. Disable reading untill next loop" % server.name)
 
             self.sleep_if_midnight()
+
+            i += 1
+            if loop_count is not None and i >= loop_count:
+                break
 
     def sleep_if_midnight(self) -> None:
         """
@@ -214,9 +232,9 @@ if __name__ == "__main__":
 
         app.setup()
         for s in app.servers:
-            s.connect = lambda: None
+            s.connect = lambda: True
         app.connect()
-        app.loop(True)
+        app.loop(2)
 
     # finally:
     #     exit_handler(servers, clients, mqtt_client) TODO NB

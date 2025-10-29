@@ -10,6 +10,9 @@ from .parameter_types import ParamInfo, HAParamInfo
 
 logger = logging.getLogger(__name__)
 
+class ReadException(Exception):
+    pass
+
 
 class Server(ABC):
     """
@@ -134,13 +137,18 @@ class Server(ABC):
         return available
 
     def read_registers(self, parameter_name: str):
-        """ Read a group of registers (parameter) using pymodbus
+        """Read a group of registers (parameter) using pymodbus
 
             Requires implementation of the abstract method 'Server._decoded()'
 
-            Parameters:
-            -----------
-                - parameter_name: str: slave parameter name string as defined in register map
+        Args:
+            parameter_name (str): slave parameter name string as defined in register map
+
+        Raises:
+            ReadException: _description_
+
+        Returns:
+            _type_: _description_
         """
         device_class_to_rounding: dict[DeviceClass, int] = {    # TODO define in deviceClass type
             DeviceClass.REACTIVE_POWER: 0,
@@ -171,9 +179,9 @@ class Server(ABC):
         result = self.connected_client.read(
             address, count, self.modbus_id, register_type)
 
-        if result.isError():
+        if result.isError(): # config error, not connection
             self.connected_client._handle_error_response(result)
-            raise Exception(f"Error reading register {parameter_name}")
+            raise ReadException(f"Error reading register {parameter_name}") 
 
         logger.debug(f"Raw register begin value: {result.registers[0]}")
         val = self._decoded(result.registers, dtype)
@@ -182,7 +190,7 @@ class Server(ABC):
         if isinstance(val, int) or isinstance(val, float):
             val = round(
                 val, device_class_to_rounding.get(device_class, 2))
-        logger.info(f"Read {parameter_name} = {val} {unit}")
+        logger.debug(f"Read {parameter_name} = {val} {unit}")
 
         return val
 
@@ -244,7 +252,6 @@ class Server(ABC):
         modbus_id: int = opts.modbus_id           # modbus slave_id
 
         try:
-            logger.info(f"{[str(client) for client in clients]}")
             idx = [str(client) for client in clients].index(
                 opts.connected_client)  # TODO ugly
         except:
