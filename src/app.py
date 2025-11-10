@@ -158,7 +158,7 @@ class App:
                 if success:
                     logger.info("Succesfully reconnected to %s" % server.name)
                     self.servers.append(server) 
-                    self.disconnected_servers.pop()
+                    self.disconnected_servers.remove(server)
                 else:
                     logger.error(f"Error Connecting to server %s. Disable reading untill next loop" % server.name)
 

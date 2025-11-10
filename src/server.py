@@ -128,6 +128,9 @@ class Server(ABC):
         except ModbusException as e:
             logger.error(f"{e.with_traceback}")
             return False
+        except OSError as e: # Host unreachable if modbus tcp client becomes unavailable during operation
+            logger.error(f"{e.with_traceback}")
+            return False
 
         # other errors
         if response.isError():
