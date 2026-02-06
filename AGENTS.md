@@ -15,6 +15,7 @@ Home Assistant add-on that communicates with Paneltrack meters over Modbus TCP, 
 Starts the app with default configuration and creates a temporary local mosquitto broker. Uses spoofed client for testing without real hardware.
 
 ### Running Tests
+Not working as of 6 Feb 2026
 ```bash
 ./run_tests.sh
 ```

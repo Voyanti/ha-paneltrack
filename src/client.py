@@ -70,6 +70,7 @@ class Client:
     def connect(self, num_retries=2, sleep_interval=3) -> None:
         logger.info(f"Connecting to client {self}")
 
+        connected = False
         for i in range(num_retries):
             connected: bool = self.client.connect()
             if connected:
