@@ -1,5 +1,5 @@
 name: "Paneltrack"
-version: "0.1.23"
+version: "0.1.24"
 image: ghcr.io/voyanti/ha-paneltrack
 slug: "ha-paneltrack"
 description: "Paneltrack"
@@ -10,9 +10,6 @@ url: "https://github.com/stephan-carstens/ha-paneltrack"
 arch:
   - aarch64
   - amd64
-  - armhf
-  - armv7
-  - i386
 options:
   servers:
   - name: PlaasRes

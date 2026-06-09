@@ -146,6 +146,7 @@ class App:
             for disconn_server in self.disconnect_stack:
                 self.servers.remove(disconn_server)
                 self.disconnected_servers.append(disconn_server)
+                self.mqtt_client.publish_availability(False, disconn_server)
             self.disconnect_stack = []
 
             # TODO: publish availability
@@ -157,8 +158,9 @@ class App:
                 success: bool = server.connect()
                 if success:
                     logger.info("Succesfully reconnected to %s" % server.name)
-                    self.servers.append(server) 
+                    self.servers.append(server)
                     self.disconnected_servers.remove(server)
+                    self.mqtt_client.publish_availability(True, server)
                 else:
                     logger.error(f"Error Connecting to server %s. Disable reading untill next loop" % server.name)
 
