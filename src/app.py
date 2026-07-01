@@ -33,7 +33,8 @@ def exit_handler(
     servers: list[Server], modbus_clients: list[Client], mqtt_client: MqttClient
 ) -> None:
     logger.info("Exiting")
-    # publish offline availability for each server
+    # publish offline availability for the bridge and each server
+    mqtt_client.publish_bridge_availability(False)
     for server in servers:
         mqtt_client.publish_availability(False, server)
     logger.info("Closing client connections on exit")
@@ -113,6 +114,10 @@ class App:
         sleep(READ_INTERVAL)
 
         self.mqtt_client.ensure_connected(self.OPTIONS.mqtt_reconnect_attempts)
+
+        # Mark the addon (bridge) online now that the broker link is up. The
+        # matching "offline" is registered as the MQTT Last Will.
+        self.mqtt_client.publish_bridge_availability(True)
 
         # Publish Discovery Topics
         for server in self.servers:
