@@ -11,7 +11,7 @@ from .parameter_types import ParamInfo, HAParamInfo
 logger = logging.getLogger(__name__)
 
 class ReadException(Exception):
-    pass
+    """Device-reported error (response received but the response contained an error code.)"""
 
 
 class Server(ABC):

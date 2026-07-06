@@ -1,7 +1,7 @@
 from .enums import RegisterTypes
 from .options import ModbusTCPOptions, ModbusRTUOptions
 from pymodbus.client import ModbusSerialClient, ModbusTcpClient
-from pymodbus.pdu import ExceptionResponse
+from pymodbus.pdu import ExceptionResponse, ModbusPDU
 from pymodbus import ModbusException
 import logging
 from time import sleep
@@ -37,7 +37,7 @@ class Client:
                                              bytesize=cl_options.bytesize, parity='Y' if cl_options.parity else 'N',
                                              stopbits=cl_options.stopbits)
 
-    def read(self, address, count, slave_id, register_type):
+    def read(self, address, count, slave_id, register_type) -> ModbusPDU:
         """
         Read modbus registers with proper error handling.
 
