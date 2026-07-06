@@ -148,7 +148,11 @@ class App:
                     self.disconnect_stack.append(server)
                     continue
                 except ModbusException as e:
-                    logger.error(f"Error reading register from {server.name=}: {e} ")
+                    logger.error(f"Modbus error while reading from {server.name=}: {e}")
+                    self.disconnect_stack.append(server)
+                    continue
+                except Exception as e:
+                    logger.error(f"Unexpected error reading from {server.name=}: {e}")
                     self.disconnect_stack.append(server)
                     continue
 
